@@ -28,14 +28,16 @@ resource "google_container_node_pool" "primary_nodes" {
   }
 }
 
-provider "kubernetes" {
-  host                   = google_container_cluster.primary.endpoint
-  token                  = data.google_client_config.default.access_token
-  cluster_ca_certificate = base64decode(google_container_cluster.primary.master_auth[0].cluster_ca_certificate)
-}
-
 data "google_client_config" "default" {}
 
+provider "kubernetes" {
+  host                   = "https://${google_container_cluster.primary.endpoint}"
+  token                  = data.google_client_config.default.access_token
+  cluster_ca_certificate = base64decode(google_container_cluster.primary.master_auth[0].cluster_ca_certificate)
+
+  # Ensure this waits until the cluster is created
+  depends_on = [google_container_cluster.primary]
+}
 
 resource "kubernetes_namespace" "example" {
   metadata {

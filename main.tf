@@ -12,6 +12,8 @@ resource "google_container_cluster" "primary" {
 
   node_config {
     machine_type = "e2-medium"
+    disk_size_gb = 50 # Reduce from 100 to 50
+    disk_type    = "pd-ssd" # or "pd-standard" if you don't need SSD
   }
 }
 

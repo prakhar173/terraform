@@ -14,7 +14,7 @@ variable "region" {
 }
 
 variable "cluster_name" {
-  default     = "my-gke-cluster"
+  default     = " nonprod-cluster"
   description = "GKE cluster name"
 }
 

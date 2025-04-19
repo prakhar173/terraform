@@ -34,6 +34,7 @@ provider "kubernetes" {
 
 data "google_client_config" "default" {}
 
+
 resource "kubernetes_namespace" "example" {
   metadata {
     name = var.namespace

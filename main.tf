@@ -32,8 +32,10 @@ resource "google_container_cluster" "primary" {
   }
 
   ip_allocation_policy {
-    use_ip_aliases = true
+    cluster_secondary_range_name  = "pods"
+    services_secondary_range_name = "services"
   }
+
 
   network    = google_compute_network.vpc.name
   subnetwork = google_compute_subnetwork.subnet.name

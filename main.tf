@@ -62,11 +62,6 @@ resource "google_container_node_pool" "primary_nodes" {
       metadata = {
         disable-legacy-endpoints = "true"
       }
-  
-      # 👇 This is how you disable external IPs properly:
-      network_interface {
-        no_external_ip = true
-      }
     }
 }
 resource "google_compute_router" "nat_router" {

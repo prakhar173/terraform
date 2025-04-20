@@ -35,6 +35,12 @@ resource "google_container_cluster" "primary" {
   remove_default_node_pool = true
   initial_node_count       = 1
 
+  node_config {
+    machine_type = "e2-medium"
+    disk_type    = "pd-standard"  # Use standard persistent disk
+    disk_size_gb = 50             # Reduce the size to fit within quota
+  }
+
   private_cluster_config {
     enable_private_nodes    = true
     enable_private_endpoint = false

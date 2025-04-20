@@ -48,26 +48,26 @@ resource "google_container_node_pool" "primary_nodes" {
   location   = var.location
   node_count = 1
 
-  node_config {
-    machine_type = "e2-medium"
-    disk_type    = "pd-standard"
-    disk_size_gb = 50
-
-    oauth_scopes = [
-      "https://www.googleapis.com/auth/cloud-platform"
-    ]
-
-    tags = ["no-external-ip"]
-    metadata = {
-      disable-legacy-endpoints = "true"
+   node_config {
+      machine_type = "e2-medium"
+      disk_type    = "pd-standard"
+      disk_size_gb = 50
+  
+      oauth_scopes = [
+        "https://www.googleapis.com/auth/cloud-platform"
+      ]
+  
+      tags = ["no-external-ip"]
+  
+      metadata = {
+        disable-legacy-endpoints = "true"
+      }
+  
+      # 👇 This is how you disable external IPs properly:
+      network_interface {
+        no_external_ip = true
+      }
     }
-
-    # Prevent node from getting external IP
-    access_config {
-      # Empty block disables external IP
-    }
-  }
-}
 
 resource "google_compute_router" "nat_router" {
   name    = "nat-router"

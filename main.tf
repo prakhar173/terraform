@@ -22,6 +22,7 @@ resource "google_container_node_pool" "primary_nodes" {
   cluster    = google_container_cluster.primary.name
   location   = var.region
   node_count = 1
+  disk_type = "pd-standard"  # default is usually "pd-ssd"
 
   node_config {
     machine_type = "e2-medium"

@@ -68,7 +68,7 @@ resource "google_container_node_pool" "primary_nodes" {
         no_external_ip = true
       }
     }
-
+}
 resource "google_compute_router" "nat_router" {
   name    = "nat-router"
   network = google_compute_network.vpc.name

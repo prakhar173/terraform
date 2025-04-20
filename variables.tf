@@ -22,3 +22,9 @@ variable "namespace" {
   default     = "my-namespace"
   description = "Kubernetes namespace name"
 }
+
+variable "location" {
+  description = "The location (region or zone) for GKE cluster"
+  type        = string
+  default     = "us-central1"
+}

@@ -5,29 +5,68 @@ provider "google" {
 }
 
 resource "google_container_cluster" "primary" {
-  name     = var.cluster_name
-  location = var.region
+  name     = "prod-cluster"
+  location = var.location
 
-  initial_node_count = 1
+  networking_mode = "VPC_NATIVE"
 
-  node_config {
-    machine_type = "e2-medium"
-    disk_size_gb = 50 # Reduce from 100 to 50
-    disk_type    = "pd-ssd" # or "pd-standard" if you don't need SSD
+  remove_default_node_pool = true
+  initial_node_count       = 1
+
+  private_cluster_config {
+    enable_private_nodes    = true
+    enable_private_endpoint = false
+    master_ipv4_cidr_block  = "172.16.0.0/28"
   }
+
+  ip_allocation_policy {
+    use_ip_aliases = true
+  }
+
+  network    = google_compute_network.vpc.name
+  subnetwork = google_compute_subnetwork.subnet.name
 }
 
+
 resource "google_container_node_pool" "primary_nodes" {
-  name       = "${google_container_cluster.primary.name}-node-pool"
+  name       = "prod-cluster-node-pool"
   cluster    = google_container_cluster.primary.name
-  location   = var.region
+  location   = var.location
   node_count = 1
 
   node_config {
     machine_type = "e2-medium"
-    disk_type    = "pd-standard"  # This is the correct location
-    disk_size_gb = 100  
+    disk_type    = "pd-standard"
+    disk_size_gb = 50
+
+    oauth_scopes = [
+      "https://www.googleapis.com/auth/cloud-platform"
+    ]
+
+    tags = ["no-external-ip"]
+    metadata = {
+      disable-legacy-endpoints = "true"
+    }
+
+    # Prevent node from getting external IP
+    access_config {
+      # Empty block disables external IP
+    }
   }
+}
+
+resource "google_compute_router" "nat_router" {
+  name    = "nat-router"
+  network = google_compute_network.vpc.name
+  region  = "us-central1"
+}
+
+resource "google_compute_router_nat" "nat_config" {
+  name                               = "nat-config"
+  router                             = google_compute_router.nat_router.name
+  region                             = "us-central1"
+  nat_ip_allocate_option             = "AUTO_ONLY"
+  source_subnetwork_ip_ranges_to_nat = "ALL_SUBNETWORKS_ALL_IP_RANGES"
 }
 
 data "google_client_config" "default" {}
